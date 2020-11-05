@@ -1,23 +1,26 @@
-# https://www.sqlitetutorial.net/sqlite-python/create-tables/
+# References: https://www.sqlitetutorial.net/sqlite-python/create-tables/
+
 import sqlite3
 from sqlite3 import Error
 import csv
 
 #Read the text file from
 #Param: text file with the ids on new line
+#Return: Array with all the file names
 def get_user_list(file_name):
-    
+    #Store the file names in file_list
+    file_list = []
     try:
         
         file = open(file_name, "r")
     except: 
         print("Error reading the file, check if it exists and the file name is spelled correctly")
-    #Store the file names in file_list
-    file_list = []
+   
     #Iterate over file object
     for x in file:
         file_name = x.strip()
         file_list.append(file_name)
+    print(file_list)    
     return file_list
 
     
@@ -26,7 +29,7 @@ def get_user_list(file_name):
 
 
 #Param db_file: the database file 
-#Returns value is connection or None
+#Returns connection or None
 def create_connection(db_file):
     conn = None
     try:
@@ -66,6 +69,7 @@ def create_events_table(conn, file_name):
     db_cursor = conn.cursor()
     with open(file_name, "r") as eventFile:
         reader = csv.DictReader(eventFile)
+        
     
         #Write data to db, write event id as int
         for row in reader:
@@ -102,7 +106,7 @@ def getEventID(string):
 
 def create_subject_table(db_cursor,file_name):
    
-    db = sqlite3.connect("annotationDB-1.db")
+    db = sqlite3.connect("annotationDB.db")
     cur = db.cursor()
     with open(file_name, "r") as dataFile:
         #Read user data
@@ -115,7 +119,7 @@ def create_subject_table(db_cursor,file_name):
         for row in reader:
             
             #read columns
-            user_id_row = row["Subject ID"].strip()
+            user_id_row = row["\ufeffSubject ID"].strip()
             session_row = row["Day (Session)"]
             type_row = row["Type of Trial"]
             trial_row = row["Trials"]
@@ -201,7 +205,7 @@ def main():
             
     
     #Create database connection and a cursor to execute sql statements
-    database = "annotationDB-1.db"
+    database = "annotationDB.db"
     db = create_connection(database)
     db_cursor = db.cursor()
     
@@ -233,6 +237,7 @@ def main():
         
 if __name__ == "__main__":
     main()
+    print("Successfully created Database")
     
         
         
